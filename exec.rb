@@ -21,6 +21,14 @@ class Slide
     @photos.map(&:tags).flatten.uniq
   end
 
+  def to_str
+    if @photos.count > 1
+      "#{photos[0].id} #{photos[1].id}\n"
+    else
+      "#{photos[0].id}\n"
+    end
+  end
+
   def fit_points(other_slide)
     common_tags = (tags & other_slide.tags)
     only_this_tags = tags - other_slide.tags
@@ -43,26 +51,26 @@ v_photos = []
 lines.each_with_index.each do |line, i|
   items = line.split(' ')
   o = items.shift
-  items.shift # remove count
+  items.shift# remove count
 
   p = Photo.new(i, o, items)
 
   if p.orientation == 'H'
-    slides << Slide.new(p)
+    slides << Slide.new([p])
   else
     v_photos << p
   end
 end
 
 
-v_photos.shuffle.each_slice(2).each do |slice| # todo later non random
+v_photos.shuffle.each_slice(2).to_a.each do |slice|# todo later non random
   slides << Slide.new(slice)
   puts "add"
 end
 
 # create stacks
 
-tags_hash = {}
+tags_hash = { }
 v_photos.each do |photo|
   photo.tags.each do |tag|
     tags_hash[tag] |= [photo.id]
@@ -71,5 +79,18 @@ end
 
 puts slides
 
+puts "-----"
+
 # puts slides.inspect
 # puts v_photos.inspect
+
+# print slides
+slides.shuffle
+
+output = "#{slides.count}\n"
+
+slides.each do |slide|
+  output += slide
+end
+
+puts output
