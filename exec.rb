@@ -13,8 +13,8 @@ end
 class Slide
   attr_accessor :photos
 
-  def initialize(*args)
-    @photos = args
+  def initialize(arr)
+    @photos = arr
   end
 
   def tags
@@ -38,8 +38,9 @@ puts "n #{n}"
 puts "lines #{lines}"
 
 slides = []
+v_photos = []
 
-v_photos = lines.each_with_index.map do |line, i|
+lines.each_with_index.each do |line, i|
   items = line.split(' ')
   o = items.shift
   items.shift # remove count
@@ -48,11 +49,27 @@ v_photos = lines.each_with_index.map do |line, i|
 
   if p.orientation == 'H'
     slides << Slide.new(p)
+  else
+    v_photos << p
   end
-
-  p
 end
-# create stacks
-v_photos
 
-puts slides.first.fit_points(slides.last)
+
+v_photos.shuffle.each_slice(2).each do |slice| # todo later non random
+  slides << Slide.new(slice)
+  puts "add"
+end
+
+# create stacks
+
+tags_hash = {}
+v_photos.each do |photo|
+  photo.tags.each do |tag|
+    tags_hash[tag] |= [photo.id]
+  end
+end
+
+puts slides
+
+# puts slides.inspect
+# puts v_photos.inspect
